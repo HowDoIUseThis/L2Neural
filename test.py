@@ -111,6 +111,26 @@ class Neural_Network(object):
         """
         return np.exp(-z)/((1+np.exp(-z))**2)
         
+    def costFunction(self,X,y):
+        """
+        Finds the cost where cost is how wrong your current fit is.
+        
+        ____________________________________________________________
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+                 -> X
+                            (Left side Input matrix)
+                 -> y
+                            (Right side Input matrix)
+                
+        Output: -> J
+                            (Cost/How good of a fit the weights provide)
+        """
+        self.yHat = self.forward(X)
+        J=0.5*sum((y-self.yHat)**2)
+        
+        return J
+    
     def costFunctionPrime(self, X, y):
         """
         Finds the cost where cost is how wrong your current fit is.
@@ -119,9 +139,9 @@ class Neural_Network(object):
         Input:  -> Network
                             (Current Initilized Neural Network)
                  -> X
-                            (Input matrix)
+                            (Left side Input matrix)
                  -> y
-                            ()
+                            (Right side Input matrix)
                 
         Output: -> dJdW1
                             (Derivative of J with respect to W1 [2x3])
@@ -182,7 +202,7 @@ class Neural_Network(object):
         dJdW1, dJdW2 = self.costFunctionPrime(X, y)
         return np.concatenate((dJdW1.ravel(), dJdW2.ravel()))
 
-def computeNumericalGradient(Network, X, y):
+def computeNumGrad(Network, X, y):
         """
         Test class used to insure that the we are on the right track.
         
@@ -193,7 +213,7 @@ def computeNumericalGradient(Network, X, y):
                 -> X
                             (Input matrix)
                 -> y
-                            ()
+                            (Right side Input matrix))
         Output: -> numgrad
                             (This vector that is returned should be very close
                              to what Neural.computeGradient(X,y) returns)
@@ -225,11 +245,18 @@ def computeNumericalGradient(Network, X, y):
 
         return numgrad 
 def checkFit(grad,numGrad):
+    from numpy import linalg as LA
     """
-    Taken from Stanford UFLDL Tutorial
-        numGrad = computeNumericalGradient(Network,X,y)
-        grad = Network.computeGradients(X,y)
-        return np.norm(grad-numGrad)/np.norm(grad+numGrad)
+    Taken from Stanford UFLDL Tutorial:
+    ____________________________________________________________
+        
+        Input:  -> grad
+                        (Gradient found through the neural network)
+                -> numGrad
+                        (Gradient calculated by the function computeNumGrad)
+        Output:
+                -> Fit
+                        (How close the Neural Network is to NumGrad)
     
     """
-    return np.norm(grad-numGrad)/np.norm(grad+numGrad)
+    return LA.norm(grad-numGrad)/LA.norm(grad+numGrad)
