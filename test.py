@@ -16,9 +16,25 @@ The rest is all me
 import numpy as np
 
 class Neural_Network(object):
+    """
+     General Steps in Network
+     ---------------------------------:
+     For [3x1] Input -> [1x1] Output
+     _______________________________________
+    |                                       |
+    |    (1) [3x1][1x3] = [3x3]             |
+    |           Input(dot)W1 = Z2           |
+    |    (2) [3x3][3x1] = [3x1]             |
+    |           Z2(dot)W2 = Z3              |
+    |    (3) [3x1]^T[3x1] = [1x1]           |
+    |           a2^T(dot)Z3 = Output        |
+    |_______________________________________|
+     
+    """
     def __init__(self):
         """
         Simple network used for learning purposes
+        ____________________________________________________________
         
         Hyperparameters (not to be changed by the network)
             -> 3x1 Input matrix
@@ -27,14 +43,6 @@ class Neural_Network(object):
                     Weight 1 = W1
                     Weight 2 = W2
                     
-        ________Steps__________
-        (1) [3x1][1x3] = [3x3]
-            Input(dot)W1 = Z2
-        (2) [3x3][3x1] = [3x1]
-            Z2(dot)W2 = Z3
-        (3) [3x1]^T[3x1] = [1x1]
-            a2^T(dot)Z3 = Output
-        
         """
         self.inputLayerSize = 2
         self.outputLayerSize =1
@@ -53,6 +61,7 @@ class Neural_Network(object):
                         (Current Initilized Neural Network)
                 -> X
                         (Data Points)
+        
         """
         self.z2 = np.dot(X,self.W1)
         self.a2 = self.sigmoid(self.z2)
@@ -62,15 +71,53 @@ class Neural_Network(object):
         
         
     def sigmoid(self, z):
-        #for this test we will use signmoid as our activation
+        """
+        Simple activation function
+        ____________________________________________________________
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+                -> Z
+                            (This is a sub J value)
+                            
+        Output:
+                -> J(Z)
+                            (Value at point Z in our activation function)
+        """
         return 1/(1+np.exp(-z))
     
     def sigmoidPrime(self,z):
-        #Gradient of sigmiod
+        """
+        Gradient of our simple activation function
+        ____________________________________________________________
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+                -> Z
+                            (This is a sub J value)
+                            
+        Output:
+                -> dJ/dZ
+                            (Value at point Z in our activation function)
+        
+        """
         return np.exp(-z)/((1+np.exp(-z))**2)
         
     def costFucntionPrime(self, X, y):
-        #Calculates derivative with respect to W1 and W2
+        """
+        Finds the cost where cost is how wrong your current fit is.
+        
+        ____________________________________________________________
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+                 -> X
+                            (Input matrix)
+                 -> y
+                            ()
+                
+        Output: -> dJdW1
+                            (Derivative of J with respect to W1)
+                -> dJdW2
+                            (Derivative of J with respect to W1)
+        """
         self.yHat = self.forward(X)
         
         delta3 = np.multiply(-(y-self.yHat),self.sigmoidPrime(self.z3))
@@ -81,17 +128,44 @@ class Neural_Network(object):
         
         return dJdW1, dJdW2
     def getParams(self):
-        #Get W1 and W2 unrolled into vector:
+        """
+        Sets the paramters to a simple row vector composed of W1 and W2
+        ____________________________________________________________
+        
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+        Output: -> Parameters
+        """
         params = np.concatenate((self.W1.ravel(), self.W2.ravel()))
         return params
     
     def setParams(self, params):
-        #Set W1 and W2 using single paramater vector.
+        
+        """
+        Set W1 and W2 using single paramater vector
+        ____________________________________________________________
+        Input:  -> Network
+                            (Current Initilized Neural Network)
+                -> params
+                            (Usually weights in the form of a single row matrix)
+        Output: -> None
+                            (Simply updates the values of W1 and W2 of the 
+                             network)
+        __________Steps__________
+        (1) W1_end ->  6     by: 3*2
+        (2) W1     ->  [2x3] by: np.shape([0:6],(2,3)) 
+        (3) W2_end ->  9     by: 6 + 3*1
+        (4) W2     ->  [3x1] by: npshape(params[6:9],(3,1))
+        _________________________
+        """
+        
         W1_start = 0
         W1_end = self.hiddenLayerSize * self.inputLayerSize
-        self.W1 = np.reshape(params[W1_start:W1_end], (self.inputLayerSize , self.hiddenLayerSize))
+        self.W1 = np.reshape(params[W1_start:W1_end], (self.inputLayerSize, 
+                             self.hiddenLayerSize))
         W2_end = W1_end + self.hiddenLayerSize*self.outputLayerSize
-        self.W2 = np.reshape(params[W1_end:W2_end], (self.hiddenLayerSize, self.outputLayerSize))
+        self.W2 = np.reshape(params[W1_end:W2_end], (self.hiddenLayerSize, 
+                             self.outputLayerSize))
         
     def computeGradients(self, X, y):
         dJdW1, dJdW2 = self.costFunctionPrime(X, y)
@@ -100,9 +174,16 @@ class Neural_Network(object):
 def computeNumericalGradient(Network, X, y):
         """
         Test class used to insure that the we are on the right track
+        ____________________________________________________________
         
         Input:  -> Network
+                            (Current Initilized Neural Network)
                 -> X
+                            (Input matrix)
+                -> y
+                            ()
+        Output: -> numgrad
+                            ()
         """
         paramsInitial = Network.getParams()
         numgrad = np.zeros(paramsInitial.shape)
