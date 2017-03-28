@@ -11,6 +11,16 @@ As well found from the series by Welch labs
 
 The rest is all me
 
+Test Matrix:
+    X = np.array(([3,5], [5,1], [10,2]), dtype=float)
+    X = X/np.amax(X, axis=0) 
+    y = np.array(([75], [82], [93]), dtype=float)
+    y = y/100
+
+To DO: 
+        Update documentation
+        
+
 @author: christopherstewart
 """
 import numpy as np
@@ -101,7 +111,7 @@ class Neural_Network(object):
         """
         return np.exp(-z)/((1+np.exp(-z))**2)
         
-    def costFucntionPrime(self, X, y):
+    def costFunctionPrime(self, X, y):
         """
         Finds the cost where cost is how wrong your current fit is.
         
@@ -114,9 +124,9 @@ class Neural_Network(object):
                             ()
                 
         Output: -> dJdW1
-                            (Derivative of J with respect to W1)
+                            (Derivative of J with respect to W1 [2x3])
                 -> dJdW2
-                            (Derivative of J with respect to W1)
+                            (Derivative of J with respect to W2 [3x1])
         """
         self.yHat = self.forward(X)
         
@@ -127,6 +137,7 @@ class Neural_Network(object):
         dJdW1 = np.dot(X.T,delta2)
         
         return dJdW1, dJdW2
+    
     def getParams(self):
         """
         Sets the paramters to a simple row vector composed of W1 and W2
@@ -173,7 +184,8 @@ class Neural_Network(object):
 
 def computeNumericalGradient(Network, X, y):
         """
-        Test class used to insure that the we are on the right track
+        Test class used to insure that the we are on the right track.
+        
         ____________________________________________________________
         
         Input:  -> Network
@@ -183,11 +195,14 @@ def computeNumericalGradient(Network, X, y):
                 -> y
                             ()
         Output: -> numgrad
-                            ()
+                            (This vector that is returned should be very close
+                             to what Neural.computeGradient(X,y) returns)
         """
         paramsInitial = Network.getParams()
+        #creates 2 empty vectors
         numgrad = np.zeros(paramsInitial.shape)
         perturb = np.zeros(paramsInitial.shape)
+        #small distance e
         e = 1e-4
 
         for p in range(len(paramsInitial)):
@@ -209,3 +224,12 @@ def computeNumericalGradient(Network, X, y):
         Network.setParams(paramsInitial)
 
         return numgrad 
+def checkFit(grad,numGrad):
+    """
+    Taken from Stanford UFLDL Tutorial
+        numGrad = computeNumericalGradient(Network,X,y)
+        grad = Network.computeGradients(X,y)
+        return np.norm(grad-numGrad)/np.norm(grad+numGrad)
+    
+    """
+    return np.norm(grad-numGrad)/np.norm(grad+numGrad)
